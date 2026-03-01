@@ -1,4 +1,4 @@
-package dev.smootheez.dbt.command;
+package io.github.thesmoothrere.revoicebot.command;
 
 import net.dv8tion.jda.api.events.interaction.command.*;
 

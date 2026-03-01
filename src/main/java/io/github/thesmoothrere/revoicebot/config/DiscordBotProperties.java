@@ -1,4 +1,4 @@
-package dev.smootheez.dbt.config;
+package io.github.thesmoothrere.revoicebot.config;
 
 import jakarta.validation.constraints.*;
 import lombok.*;

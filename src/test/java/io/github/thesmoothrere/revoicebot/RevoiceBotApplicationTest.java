@@ -1,13 +1,12 @@
-package dev.smootheez.dbt;
+package io.github.thesmoothrere.revoicebot;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DiscordBotTemplateApplicationTests {
+class RevoiceBotApplicationTest {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoad() {}
 
 }

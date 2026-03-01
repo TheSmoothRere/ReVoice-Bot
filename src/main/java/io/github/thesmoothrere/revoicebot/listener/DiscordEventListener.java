@@ -1,6 +1,6 @@
-package dev.smootheez.dbt.listener;
+package io.github.thesmoothrere.revoicebot.listener;
 
-import dev.smootheez.dbt.command.*;
+import io.github.thesmoothrere.revoicebot.command.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import net.dv8tion.jda.api.events.interaction.command.*;

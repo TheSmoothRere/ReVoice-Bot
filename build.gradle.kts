@@ -1,10 +1,10 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.5.6"
+    id("org.springframework.boot") version "4.0.3"
     id("io.spring.dependency-management") version "1.1.7"
 }
 
-group = "dev.smootheez"
+group = "io.github.thesmoothrere"
 version = "0.0.1-SNAPSHOT"
 description = "Template to create Discord Bot using SpringBoot"
 

@@ -1,4 +1,4 @@
-package dev.smootheez.dbt.command;
+package io.github.thesmoothrere.revoicebot.command;
 
 import lombok.*;
 import lombok.extern.slf4j.*;

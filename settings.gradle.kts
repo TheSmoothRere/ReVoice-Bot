@@ -1,1 +1,1 @@
-rootProject.name = "dbt"
+rootProject.name = "revoicebot"
