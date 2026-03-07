@@ -29,6 +29,7 @@ val jdaVersion: String by project
 dependencies {
     implementation("net.dv8tion:JDA:$jdaVersion")
     implementation("ch.qos.logback:logback-classic")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -40,6 +41,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-redis-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

@@ -5,6 +5,7 @@ import io.github.thesmoothrere.revoicebot.listener.*;
 import lombok.extern.slf4j.*;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.requests.*;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
 
@@ -29,7 +30,10 @@ public class DiscordBotConfiguration {
                 .enableIntents(
                         GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_PRESENCES,
-                        GatewayIntent.GUILD_MEMBERS
+                        GatewayIntent.GUILD_MEMBERS,
+                        GatewayIntent.GUILD_VOICE_STATES
+                ).enableCache(
+                        CacheFlag.VOICE_STATE
                 )
                 .addEventListeners(eventListener)
                 .build();
