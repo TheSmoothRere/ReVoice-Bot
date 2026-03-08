@@ -20,4 +20,9 @@ public interface ParentChannelRepository extends JpaRepository<ParentChannelEnti
     @Modifying
     @Query("update ParentChannelEntity p set p.deleted = ?1 where p.channelId = ?2")
     void updateDeleteStatus(Boolean deleted, Long channelId);
+
+    @Transactional
+    @Modifying
+    @Query("update ParentChannelEntity p set p.prefix = ?1 where p.channelId = ?2")
+    void updatePrefix(String prefix, Long channelId);
 }

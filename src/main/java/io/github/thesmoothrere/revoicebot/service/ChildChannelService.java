@@ -51,13 +51,15 @@ public class ChildChannelService {
         if (leftChannelId.equals(getValue(leftChannelId)) && leftChannel.getMembers().isEmpty()) {
             log.debug("Deleting temporary voice channel: {}", leftChannel.getName());
             leftChannel.delete().queue(
-                    success -> {
-                        deleteValue(leftChannel.getIdLong());
-                        removeChildChannel(leftChannel.getIdLong());
-                    },
+                    success -> clearMetadata(leftChannelId),
                     throwable -> log.error("Failed to delete temporary voice channel: {}", leftChannel.getName(), throwable)
             );
         }
+    }
+
+    public void clearMetadata(Long childChannelId) {
+        deleteValue(childChannelId);
+        removeChildChannel(childChannelId);
     }
 
     public void removeChildChannel(Long childChannelId) {

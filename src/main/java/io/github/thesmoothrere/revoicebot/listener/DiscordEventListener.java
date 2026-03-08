@@ -44,7 +44,7 @@ public class DiscordEventListener extends ListenerAdapter {
                 parentChannelService.removeParentChannel(channelId);
             }
             if (childChannelService.isChildChannelExist(channelId)) {
-                childChannelService.removeChildChannel(channelId);
+                childChannelService.clearMetadata(channelId);
             }
         }
     }

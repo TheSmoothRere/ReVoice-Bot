@@ -1,12 +1,12 @@
 package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
+import io.github.thesmoothrere.revoicebot.dto.UpdatePrefixDto;
 import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
 import io.github.thesmoothrere.revoicebot.exception.ParentChannelNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,6 +20,10 @@ public class ParentChannelService {
                 .map(ParentChannelEntity::getChannelId).orElse(null);
     }
 
+    public void updatePrefix(UpdatePrefixDto updatePrefixDto) {
+        parentChannelRepository.updatePrefix(updatePrefixDto.getPrefix(), updatePrefixDto.getChannelId());
+    }
+
     public void removeParentChannel(Long channelId) {
         parentChannelRepository.updateDeleteStatus(true, channelId);
     }
@@ -30,12 +34,8 @@ public class ParentChannelService {
 
     public ParentChannelEntity getParentChannel(Long channelId) {
         return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId).orElseThrow(
-                () -> throwParentChannelNotFounException(channelId)
+                () -> new ParentChannelNotFoundException("Parent channel not found for channel ID: " + channelId)
         );
-    }
-
-    private static @NonNull ParentChannelNotFoundException throwParentChannelNotFounException(Long channelId) {
-        return new ParentChannelNotFoundException("Parent channel not found for channel ID: " + channelId);
     }
 
     public ParentChannelEntity saveParentChannel(ParentChannelDto channelDto) {
