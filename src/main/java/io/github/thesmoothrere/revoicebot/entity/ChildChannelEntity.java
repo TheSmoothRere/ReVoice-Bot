@@ -3,7 +3,10 @@ package io.github.thesmoothrere.revoicebot.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
+
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -19,7 +22,20 @@ public class ChildChannelEntity {
     @NaturalId
     private Long channelId;
 
+    private Long ownerId;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant createdAt;
+
+    private Boolean deleted;
+
     @ManyToOne
     @JoinColumn(name = "parent_channel_id")
     private ParentChannelEntity parentChannel;
+
+    @PrePersist
+    public void prePersist() {
+        deleted = false;
+    }
 }

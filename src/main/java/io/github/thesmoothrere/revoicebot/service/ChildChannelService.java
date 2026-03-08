@@ -1,5 +1,8 @@
 package io.github.thesmoothrere.revoicebot.service;
 
+import io.github.thesmoothrere.revoicebot.dto.ChildChannelDto;
+import io.github.thesmoothrere.revoicebot.entity.ChildChannelEntity;
+import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.Member;
@@ -12,21 +15,33 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ChildChannelService {
-    private static final long PARENT_CHANNEL_ID = 1479853800272560248L; // TODO: later, should fetch from database instead
-    private final RedisTemplate<Long, Object> redisTemplate;
+    private final RedisTemplate<String, Long> redisTemplate;
+    private final ChildChannelRepository childChannelRepository;
+    private final ParentChannelService parentChannelService;
 
     public void handleJoinedChannel(@NonNull VoiceChannel joinedChannel, Member member) {
-        if (joinedChannel.getIdLong() != PARENT_CHANNEL_ID) return;
+        Long joinedChannelId = joinedChannel.getIdLong();
+        if (!joinedChannelId.equals(parentChannelService.getChannelId(joinedChannelId))) return;
 
-        log.debug("Member {} joined the parent channel. Creating a temporary voice channel.", member.getEffectiveName());
+        String memberEffectiveName = member.getEffectiveName();
+        log.debug("Member {} joined the parent channel. Creating a temporary voice channel.", memberEffectiveName);
         joinedChannel.createCopy().queue(
                 generatedVoice -> {
                     generatedVoice.getGuild().moveVoiceMember(member, generatedVoice).queue();
-                    generatedVoice.getManager().setName(member.getEffectiveName()).queue();
+                    generatedVoice.getManager().setName(memberEffectiveName).queue();
                     saveValue(generatedVoice.getIdLong());
+                    saveChildChannel(
+                            ChildChannelDto.builder()
+                                    .channelId(generatedVoice.getIdLong())
+                                    .ownerId(member.getIdLong())
+                                    .parentChannel(
+                                            parentChannelService.getParentChannel(joinedChannelId)
+                                    )
+                                    .build()
+                    );
                 },
                 throwable -> log.error("Failed to create a temporary voice channel for member: {}",
-                        member.getEffectiveName(), throwable)
+                        memberEffectiveName, throwable)
         );
     }
 
@@ -36,24 +51,47 @@ public class ChildChannelService {
         if (leftChannelId.equals(getValue(leftChannelId)) && leftChannel.getMembers().isEmpty()) {
             log.debug("Deleting temporary voice channel: {}", leftChannel.getName());
             leftChannel.delete().queue(
-                    success -> deleteValue(leftChannel.getIdLong()),
+                    success -> {
+                        deleteValue(leftChannel.getIdLong());
+                        removeChildChannel(leftChannel.getIdLong());
+                    },
                     throwable -> log.error("Failed to delete temporary voice channel: {}", leftChannel.getName(), throwable)
             );
         }
     }
 
-    private void saveValue(Long key) {
-        log.debug("Saving key: {}", key);
-        redisTemplate.opsForValue().set(key, key);
+    public void removeChildChannel(Long childChannelId) {
+        childChannelRepository.updateDeleteStatus(true, childChannelId);
     }
 
-    private Long getValue(Long key) {
-        log.debug("Getting key: {}", key);
-        return (Long) redisTemplate.opsForValue().get(key);
+    public ChildChannelEntity saveChildChannel(ChildChannelDto channelDto) {
+        ChildChannelEntity entity = new ChildChannelEntity();
+        entity.setChannelId(channelDto.getChannelId());
+        entity.setOwnerId(channelDto.getOwnerId());
+        entity.setParentChannel(channelDto.getParentChannel());
+        return childChannelRepository.save(entity);
     }
 
-    private void deleteValue(Long key) {
-        log.debug("Deleting key: {}", key);
-        redisTemplate.delete(key);
+    private void saveValue(Long value) {
+        String redisKey = getRedisKey(value);
+        log.debug("Saving key: {}", redisKey);
+        redisTemplate.opsForValue().set(redisKey, value);
+    }
+
+    private static @NonNull String getRedisKey(Long value) {
+        return "channel:id:" + value;
+    }
+
+    // TODO: add fallback to database if redis is down
+    private Long getValue(Long value) {
+        String redisKey = getRedisKey(value);
+        log.debug("Getting key: {}", redisKey);
+        return redisTemplate.opsForValue().get(redisKey);
+    }
+
+    private void deleteValue(Long value) {
+        String redisKey = getRedisKey(value);
+        log.debug("Deleting key: {}", redisKey);
+        redisTemplate.delete(redisKey);
     }
 }
