@@ -64,6 +64,10 @@ public class ChildChannelService {
         childChannelRepository.updateDeleteStatus(true, childChannelId);
     }
 
+    public boolean isChildChannelExist(Long childChannelId) {
+        return childChannelRepository.existsByChannelId(childChannelId);
+    }
+
     public ChildChannelEntity saveChildChannel(ChildChannelDto channelDto) {
         ChildChannelEntity entity = new ChildChannelEntity();
         entity.setChannelId(channelDto.getChannelId());

@@ -2,7 +2,10 @@ package io.github.thesmoothrere.revoicebot.repository;
 
 import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -12,4 +15,9 @@ public interface ParentChannelRepository extends JpaRepository<ParentChannelEnti
     Optional<ParentChannelEntity> findByChannelIdAndDeletedFalse(Long channelId);
 
     boolean existsByChannelId(Long channelId);
+
+    @Transactional
+    @Modifying
+    @Query("update ParentChannelEntity p set p.deleted = ?1 where p.channelId = ?2")
+    void updateDeleteStatus(Boolean deleted, Long channelId);
 }

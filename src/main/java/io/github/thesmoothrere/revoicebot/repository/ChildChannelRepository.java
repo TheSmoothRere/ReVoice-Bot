@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface ChildChannelRepository extends JpaRepository<ChildChannelEntity, Long> {
     Optional<ChildChannelEntity> findByChannelIdAndDeletedFalse(Long channelId);
 
+    boolean existsByChannelId(Long channelId);
+
     @Transactional
     @Modifying
     @Query("update ChildChannelEntity c set c.deleted = ?1 where c.channelId = ?2")

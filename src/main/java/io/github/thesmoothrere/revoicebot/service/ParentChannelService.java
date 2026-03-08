@@ -20,6 +20,10 @@ public class ParentChannelService {
                 .map(ParentChannelEntity::getChannelId).orElse(null);
     }
 
+    public void removeParentChannel(Long channelId) {
+        parentChannelRepository.updateDeleteStatus(true, channelId);
+    }
+
     public boolean isParentChannelExist(Long channelId) {
         return parentChannelRepository.existsByChannelId(channelId);
     }
