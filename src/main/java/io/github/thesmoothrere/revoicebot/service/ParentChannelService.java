@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 public class ParentChannelService {
     private final ParentChannelRepository parentChannelRepository;
 
-    public Long getChannelId(Long channelId) {
-        return parentChannelRepository.findByChannelId(channelId)
-                .map(ParentChannelEntity::getChannelId).orElse(null);
+    public String getPrefix(Long channelId) {
+        return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId)
+                .map(ParentChannelEntity::getPrefix).orElse(null);
     }
 
     public void updatePrefix(UpdatePrefixDto updatePrefixDto) {

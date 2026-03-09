@@ -66,7 +66,7 @@ public class CreateNewSubcommand extends SubSlashCommand {
                 .setDescription("Successfully created voice channel")
                 .addField("Parent Channel", channel.getAsMention(), false)
                 .addField("Category", categoryName, false)
-                .addField("Prefix", prefix, false)
+                .addField("Prefix", "`" + prefix + "`", false)
                 .setColor(Color.GREEN);
 
         event.replyEmbeds(embed.build()).setEphemeral(true).queue();

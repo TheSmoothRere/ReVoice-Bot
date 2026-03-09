@@ -63,7 +63,7 @@ public class CreateExistSubcommand extends SubSlashCommand {
                 .setTitle("✅ Command Successful!")
                 .setDescription("Successfully registered existing channel as a parent.")
                 .addField("Parent Channel", channel.getAsMention(), false)
-                .addField("Prefix", prefix, false)
+                .addField("Prefix", "`" + prefix + "`", false)
                 .setColor(Color.GREEN);
 
         event.replyEmbeds(embed.build()).setEphemeral(true).queue();
