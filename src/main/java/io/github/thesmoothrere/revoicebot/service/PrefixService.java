@@ -1,5 +1,6 @@
 package io.github.thesmoothrere.revoicebot.service;
 
+import io.github.thesmoothrere.revoicebot.dto.PrefixDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +13,17 @@ import java.util.regex.Pattern;
 public class PrefixService {
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{(.*?)}");
 
-    public String resolvePrefix(String template, String displayName, String number, String alphabet) {
-        if (template == null || template.isBlank()) {
-            return "";
-        }
+    public String resolvePrefix(PrefixDto prefixDto) {
+        if (prefixDto.getTemplate() == null || prefixDto.getTemplate().isBlank()) return "Generated Voice";
 
         Map<String, String> context = Map.of(
-                "user.name", displayName,
-                "number", number,
-                "alphabet", alphabet
+                "user.name", prefixDto.getDisplayName(),
+                "number", prefixDto.getNumber(),
+                "alphabet", prefixDto.getAlphabet()
         );
 
         StringBuilder result = new StringBuilder();
-        Matcher matcher = PLACEHOLDER_PATTERN.matcher(template);
+        Matcher matcher = PLACEHOLDER_PATTERN.matcher(prefixDto.getTemplate());
 
         while (matcher.find()) {
             String key = matcher.group(1);
@@ -33,7 +32,7 @@ public class PrefixService {
         }
         matcher.appendTail(result);
 
-        log.debug("Resolved prefix template: {}", result.toString());
+        log.debug("Resolved prefix template: {}", result);
         return result.toString();
     }
 }

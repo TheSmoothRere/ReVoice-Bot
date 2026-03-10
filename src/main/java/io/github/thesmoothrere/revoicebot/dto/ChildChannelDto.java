@@ -11,5 +11,6 @@ import lombok.Setter;
 public class ChildChannelDto {
     private Long channelId;
     private Long ownerId;
+    private String count;
     private ParentChannelEntity parentChannel;
 }

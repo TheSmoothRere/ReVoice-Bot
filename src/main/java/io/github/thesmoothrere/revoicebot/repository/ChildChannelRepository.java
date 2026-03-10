@@ -7,16 +7,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface ChildChannelRepository extends JpaRepository<ChildChannelEntity, Long> {
-    Optional<ChildChannelEntity> findByChannelIdAndDeletedFalse(Long channelId);
-
     boolean existsByChannelId(Long channelId);
 
     @Transactional
     @Modifying
     @Query("update ChildChannelEntity c set c.deleted = ?1 where c.channelId = ?2")
     void updateDeleteStatus(Boolean deleted, Long channelId);
+
+    @Query("""
+            select c.count from ChildChannelEntity c
+            where c.parentChannel.channelId = ?1 and c.deleted = false and c.parentChannel.deleted = false
+            order by c.count""")
+    List<Integer> findActiveCounts(Long channelId);
 }

@@ -1,7 +1,10 @@
 package io.github.thesmoothrere.revoicebot.service;
 
+import io.github.thesmoothrere.revoicebot.dto.ChildChannelDto;
+import io.github.thesmoothrere.revoicebot.dto.PrefixDto;
 import io.github.thesmoothrere.revoicebot.entity.ChildChannelEntity;
 import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -12,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -22,6 +26,7 @@ public class ChildChannelService {
     private final RedisTemplate<String, Long> redisTemplate;
     private final ChildChannelRepository childChannelRepository;
     private final ParentChannelService parentChannelService;
+    private final PrefixService prefixService;
 
     public void handleJoinedChannel(@NonNull VoiceChannel parentChannel, @NonNull Member member) {
         long parentId = parentChannel.getIdLong();
@@ -33,25 +38,34 @@ public class ChildChannelService {
         log.debug("Member {} joined parent channel {}. Creating temporary channel.", memberName, parentId);
 
         // Create the channel with the correct name immediately
+        long ownerId = member.getIdLong();
+        PrefixDto prefixDto = new PrefixDto(parentChannelService.getPrefix(parentId));
+        prefixDto.setDisplayName(memberName);
+        String nextNumber = getNextNumber(parentId);
+        prefixDto.setNumber(nextNumber);
+        prefixDto.setAlphabet("A"); // TODO: use alphabet based on count
         parentChannel.createCopy()
                 .addMemberPermissionOverride(
-                        member.getIdLong(),
+                        ownerId,
                         EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS),
                         null
                 )
-                .setName(resolvePrefix(parentChannelService.getPrefix(parentId)))
+                .setName(prefixService.resolvePrefix(prefixDto))
                 .queue(tempChannel -> {
                     // Sequence: Move member -> Save to DB/Redis
                     tempChannel.getGuild().moveVoiceMember(member, tempChannel).queue();
 
-                    persistChildChannel(tempChannel, member.getIdLong(), parentId);
+                    persistChildChannel(
+                            ChildChannelDto.builder()
+                                    .channelId(tempChannel.getIdLong())
+                                    .ownerId(ownerId)
+                                    .count(nextNumber)
+                                    .parentChannel(parentChannelService.getParentChannel(parentId))
+                                    .build()
+                    );
 
                     log.info("Created temporary channel {} for {}", tempChannel.getId(), memberName);
                 }, throwable -> log.error("Failed to create temporary channel for {}", memberName, throwable));
-    }
-
-    private String resolvePrefix(String prefix) {
-        return "name"; // TODO: Resolve prefix
     }
 
     public void handleLeftChannel(@NonNull VoiceChannel leftChannel) {
@@ -68,8 +82,24 @@ public class ChildChannelService {
         }
     }
 
-    private void persistChildChannel(VoiceChannel channel, long ownerId, long parentId) {
-        long channelId = channel.getIdLong();
+    private synchronized String getNextNumber(long parentId) {
+        List<Integer> activeCounts = childChannelRepository.findActiveCounts(parentId);
+
+        Integer nextAvailable = 1;
+        for (Integer count : activeCounts) {
+            if (count.equals(nextAvailable)) {
+                nextAvailable++;
+            } else {
+                break;
+            }
+        }
+
+        log.debug("Next available number for parent channel {}: {}", parentId, nextAvailable);
+        return String.valueOf(nextAvailable);
+    }
+
+    private void persistChildChannel(ChildChannelDto childChannelDto) {
+        long channelId = childChannelDto.getChannelId();
 
         // Save to Redis for fast lookup during voice state changes
         saveToCache(channelId);
@@ -77,8 +107,9 @@ public class ChildChannelService {
         // Save to Database
         ChildChannelEntity entity = new ChildChannelEntity();
         entity.setChannelId(channelId);
-        entity.setOwnerId(ownerId);
-        entity.setParentChannel(parentChannelService.getParentChannel(parentId));
+        entity.setOwnerId(childChannelDto.getOwnerId());
+        entity.setCount(childChannelDto.getCount());
+        entity.setParentChannel(childChannelDto.getParentChannel());
 
         childChannelRepository.save(entity);
     }
