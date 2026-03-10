@@ -39,8 +39,9 @@ public abstract class SubSlashCommand implements ISlashCommand {
         return this;
     }
 
-    public SubSlashCommand addOption(OptionType type, String name, String description, boolean required) {
-        this.options.add(new OptionData(type, name, description, required));
-        return this;
+    public OptionData addOption(OptionType type, String name, String description, boolean required) {
+        OptionData data = new OptionData(type, name, description, required);
+        this.options.add(data);
+        return data;
     }
 }

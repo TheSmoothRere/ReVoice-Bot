@@ -1,4 +1,4 @@
-package io.github.thesmoothrere.revoicebot.commands.create;
+package io.github.thesmoothrere.revoicebot.commands.create.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;

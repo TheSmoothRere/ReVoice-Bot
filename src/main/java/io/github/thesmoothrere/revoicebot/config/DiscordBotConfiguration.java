@@ -4,6 +4,7 @@ import io.github.thesmoothrere.revoicebot.command.*;
 import io.github.thesmoothrere.revoicebot.listener.*;
 import lombok.extern.slf4j.*;
 import net.dv8tion.jda.api.*;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.beans.factory.annotation.*;
@@ -35,6 +36,8 @@ public class DiscordBotConfiguration {
                 ).enableCache(
                         CacheFlag.VOICE_STATE
                 )
+                .setStatus(OnlineStatus.IDLE)
+                .setActivity(Activity.customStatus("Create temp voice for you"))
                 .addEventListeners(eventListener)
                 .build();
 

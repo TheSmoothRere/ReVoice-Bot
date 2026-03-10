@@ -4,7 +4,6 @@ import io.github.thesmoothrere.revoicebot.dto.ChildChannelDto;
 import io.github.thesmoothrere.revoicebot.dto.PrefixDto;
 import io.github.thesmoothrere.revoicebot.entity.ChildChannelEntity;
 import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.Permission;
@@ -92,6 +91,7 @@ public class ChildChannelService {
             number /= 26;
         }
 
+        log.debug("Alphabet label for number {}: {}", number, result);
         return result.toString();
     }
 

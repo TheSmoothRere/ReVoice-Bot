@@ -31,6 +31,7 @@ public class PingCommand extends SlashCommand {
             embedBuilder.setColor(LatencyColor.HIGH.colorCode);
         }
 
+        log.debug("Ping command executed. Latency: {}ms", latency);
         event.replyEmbeds(embedBuilder.build()).queue();
     }
 

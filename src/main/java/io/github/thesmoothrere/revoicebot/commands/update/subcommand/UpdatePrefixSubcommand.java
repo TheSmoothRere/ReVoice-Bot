@@ -1,4 +1,4 @@
-package io.github.thesmoothrere.revoicebot.commands.update;
+package io.github.thesmoothrere.revoicebot.commands.update.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
 import io.github.thesmoothrere.revoicebot.dto.UpdatePrefixDto;
