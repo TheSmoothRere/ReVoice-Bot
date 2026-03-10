@@ -43,7 +43,7 @@ public class ChildChannelService {
         prefixDto.setDisplayName(memberName);
         String nextNumber = getNextNumber(parentId);
         prefixDto.setNumber(nextNumber);
-        prefixDto.setAlphabet("A"); // TODO: use alphabet based on count
+        prefixDto.setAlphabet(getAlphabetLabel(Integer.parseInt(nextNumber)));
         parentChannel.createCopy()
                 .addMemberPermissionOverride(
                         ownerId,
@@ -82,12 +82,26 @@ public class ChildChannelService {
         }
     }
 
+    private String getAlphabetLabel(int number) {
+        StringBuilder result = new StringBuilder();
+
+        while (number > 0) {
+            number--;
+            char letter = (char) ('A' + (number % 26));
+            result.insert(0, letter);
+            number /= 26;
+        }
+
+        return result.toString();
+    }
+
+    // Note: if someday need to sharding this bot. this method will not work anymore as intended
     private synchronized String getNextNumber(long parentId) {
         List<Integer> activeCounts = childChannelRepository.findActiveCounts(parentId);
 
-        Integer nextAvailable = 1;
-        for (Integer count : activeCounts) {
-            if (count.equals(nextAvailable)) {
+        int nextAvailable = 1;
+        for (int count : activeCounts) {
+            if (count == nextAvailable) {
                 nextAvailable++;
             } else {
                 break;
