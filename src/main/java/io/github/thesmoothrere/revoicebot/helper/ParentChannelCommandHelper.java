@@ -3,6 +3,7 @@ package io.github.thesmoothrere.revoicebot.helper;
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
 import io.github.thesmoothrere.revoicebot.service.ParentChannelService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ParentChannelCommandHelper {
@@ -40,6 +42,7 @@ public class ParentChannelCommandHelper {
                 .addField("Category", category != null ? category.getName() : "None", true)
                 .setColor(Color.GREEN);
 
+        log.debug("Saved parent channel: {} with prefix: {} in guild: {}", channel.getId(), prefix, channel.getGuild().getId());
         event.replyEmbeds(embed.build()).setEphemeral(true).queue();
     }
 
@@ -49,6 +52,7 @@ public class ParentChannelCommandHelper {
                 .setDescription(message)
                 .setColor(Color.RED);
 
+        log.error("Failed creating parent channel. Description: {}", message);
         // If the interaction is already acknowledged (e.g. in a callback), use hook
         if (event.isAcknowledged()) {
             event.getHook().sendMessageEmbeds(embed.build()).setEphemeral(true).queue();

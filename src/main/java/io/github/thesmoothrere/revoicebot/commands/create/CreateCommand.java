@@ -16,8 +16,8 @@ public class CreateCommand extends SlashCommand {
     @Override
     public void init() {
         setCommand("create", "create");
-        addSubcommand(createNewSubcommand); // need to limit the creation of parent channel to one per-guild for free tier
-        addSubcommand(createExistSubcommand); // need to limit the creation of parent channel to one per-guild for free tier
+        addSubcommand(createNewSubcommand);
+        addSubcommand(createExistSubcommand);
         this.commandData().setContexts(InteractionContextType.GUILD);
     }
 }
