@@ -14,7 +14,7 @@ public class GuildService {
     private final GuildRepository guildRepository;
 
     @Transactional // Essential for data consistency
-    public GuildEntity saveGuild(Long guildId) {
+    public void saveGuild(Long guildId) {
         // 1. Find by ID only (ignore the deleted flag for the search)
         GuildEntity entity = guildRepository.findByGuildId(guildId)
                 .orElseGet(() -> {
@@ -28,10 +28,8 @@ public class GuildService {
         if (Boolean.TRUE.equals(entity.getDeleted())) {
             log.debug("Restoring/Saving GuildEntity for guildId: {}", guildId);
             entity.setDeleted(false);
-            return guildRepository.save(entity);
+            guildRepository.save(entity);
         }
-
-        return entity; // Already exists and active, just return it
     }
 
     public void updateDeleteStatus(Long guildId) {

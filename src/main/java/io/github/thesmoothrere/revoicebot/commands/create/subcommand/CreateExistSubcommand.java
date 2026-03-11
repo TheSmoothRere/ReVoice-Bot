@@ -2,7 +2,6 @@ package io.github.thesmoothrere.revoicebot.commands.create.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
-import io.github.thesmoothrere.revoicebot.service.GuildService;
 import io.github.thesmoothrere.revoicebot.service.ParentChannelService;
 import io.github.thesmoothrere.revoicebot.util.OptionCommandNameUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CreateExistSubcommand extends SubSlashCommand {
     private final ParentChannelService parentChannelService;
-    private final GuildService guildService;
 
     @Override
     public void init() {
@@ -36,8 +34,13 @@ public class CreateExistSubcommand extends SubSlashCommand {
     public void execute(SlashCommandInteractionEvent event) {
         // 1. Extract and Validate inputs
         OptionMapping channelOption = Objects.requireNonNull(event.getOption(OptionCommandNameUtil.CHANNEL));
-        String prefix = event.getOption(OptionCommandNameUtil.PREFIX, "{user.name}", OptionMapping::getAsString);
+        String prefix = event.getOption(OptionCommandNameUtil.PREFIX, "{user.name}'s Voice", OptionMapping::getAsString);
         Guild guild = Objects.requireNonNull(event.getGuild());
+
+        if (parentChannelService.countParentChannels(guild.getIdLong()) >= 1) {
+            replyError(event, "You can only have one parent channel per guild.");
+            return;
+        }
 
         // 2. Type Check (Early Return)
         if (!(channelOption.getAsChannel() instanceof VoiceChannel voiceChannel)) {

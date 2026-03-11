@@ -2,7 +2,6 @@ package io.github.thesmoothrere.revoicebot.commands.create.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
-import io.github.thesmoothrere.revoicebot.service.GuildService;
 import io.github.thesmoothrere.revoicebot.service.ParentChannelService;
 import io.github.thesmoothrere.revoicebot.util.OptionCommandNameUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CreateNewSubcommand extends SubSlashCommand {
     private final ParentChannelService parentChannelService;
-    private final GuildService guildService;
 
     @Override
     public void init() {
@@ -39,10 +37,15 @@ public class CreateNewSubcommand extends SubSlashCommand {
     @Override
     public void execute(SlashCommandInteractionEvent event) {
         String name = Objects.requireNonNull(event.getOption(OptionCommandNameUtil.NAME)).getAsString();
-        String prefix = event.getOption(OptionCommandNameUtil.PREFIX, "{user.name}", OptionMapping::getAsString);
+        String prefix = event.getOption(OptionCommandNameUtil.PREFIX, "{user.name}'s Voice", OptionMapping::getAsString);
         GuildChannelUnion categoryOption = event.getOption(OptionCommandNameUtil.CATEGORY, null, OptionMapping::getAsChannel);
 
         Guild guild = Objects.requireNonNull(event.getGuild());
+
+        if (parentChannelService.countParentChannels(guild.getIdLong()) >= 1) {
+            replyError(event, "You can only have one parent channel per guild.");
+            return;
+        }
 
         log.debug("Attempting to create channel: {} with prefix: {} in category: {}", name, prefix, categoryOption);
 
@@ -53,7 +56,7 @@ public class CreateNewSubcommand extends SubSlashCommand {
 
         action.queue(
                 channel -> handleSuccess(event, channel, prefix),
-                error -> handleFailure(event, error)
+                error -> replyError(event, "Failed to create voice channel: " + error.getMessage(), error)
         );
     }
 
@@ -75,14 +78,18 @@ public class CreateNewSubcommand extends SubSlashCommand {
         log.debug("Successfully created and logged voice channel: {}", channel.getId());
     }
 
-    private void handleFailure(SlashCommandInteractionEvent event, Throwable error) {
-        log.error("Failed to create voice channel", error);
+    private void replyError(SlashCommandInteractionEvent event, String description, Throwable error) {
+        log.error("Failed to create voice channel. Error: ", error);
+        replyError(event, description);
+    }
 
+    private void replyError(SlashCommandInteractionEvent event, String description) {
         EmbedBuilder embed = new EmbedBuilder()
                 .setTitle("❌ Command Failed!")
-                .setDescription("Failed to create voice channel: " + error.getMessage())
+                .setDescription(description)
                 .setColor(Color.RED);
 
+        log.error("Failed to create voice channel: {}", description);
         event.replyEmbeds(embed.build()).setEphemeral(true).queue();
     }
 

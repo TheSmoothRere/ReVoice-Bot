@@ -37,7 +37,7 @@ public class ParentChannelService {
     }
 
     @Transactional
-    public ParentChannelEntity saveParentChannel(ParentChannelDto channelDto) {
+    public void saveParentChannel(ParentChannelDto channelDto) {
         ParentChannelEntity entity = new ParentChannelEntity();
         entity.setChannelId(channelDto.getChannelId());
         entity.setPrefix(channelDto.getPrefix());
@@ -46,6 +46,10 @@ public class ParentChannelService {
                 () -> new GuildEntityNotFoundException("Guild not found for guild ID: " + channelDto.getGuildId())
         );
         entity.setGuild(guild);
-        return parentChannelRepository.save(entity);
+        parentChannelRepository.save(entity);
+    }
+
+    public long countParentChannels(Long guildId) {
+        return parentChannelRepository.countByGuild_GuildIdAndDeletedFalse(guildId);
     }
 }
