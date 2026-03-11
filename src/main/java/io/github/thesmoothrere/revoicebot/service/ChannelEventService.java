@@ -35,11 +35,16 @@ public class ChannelEventService {
         prefixDto.setDisplayName(memberName);
         String nextNumber = childChannelService.getNextNumber(parentId);
         prefixDto.setNumber(nextNumber);
-        prefixDto.setAlphabet(childChannelService.getAlphabetLabel(Integer.parseInt(nextNumber)));
+        prefixDto.setAlphabet(
+                childChannelService.getAlphabetLabel(Integer.parseInt(nextNumber))
+        );
         parentChannel.createCopy()
                 .addMemberPermissionOverride(
                         ownerId,
-                        EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS),
+                        EnumSet.of(
+                                Permission.MANAGE_CHANNEL,
+                                Permission.VOICE_MOVE_OTHERS
+                        ),
                         null
                 )
                 .setName(prefixService.resolvePrefix(prefixDto))

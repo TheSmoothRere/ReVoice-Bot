@@ -26,7 +26,7 @@ public class GuildService {
 
         // 2. Only update and save if it was actually deleted or is brand new
         if (Boolean.TRUE.equals(entity.getDeleted())) {
-            log.debug("Restoring/Saving GuildEntity for guildId: {}", guildId);
+            log.debug("Restoring GuildEntity for guildId: {}", guildId);
             entity.setDeleted(false);
             guildRepository.save(entity);
         }

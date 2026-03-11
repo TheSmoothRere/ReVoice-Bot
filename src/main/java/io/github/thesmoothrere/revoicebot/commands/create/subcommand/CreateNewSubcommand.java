@@ -1,12 +1,11 @@
 package io.github.thesmoothrere.revoicebot.commands.create.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
-import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
+import io.github.thesmoothrere.revoicebot.helper.ParentChannelCommandHelper;
 import io.github.thesmoothrere.revoicebot.service.ParentChannelService;
 import io.github.thesmoothrere.revoicebot.util.OptionCommandNameUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -17,14 +16,13 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
 import java.util.Objects;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class CreateNewSubcommand extends SubSlashCommand {
-    private final ParentChannelService parentChannelService;
+    private final ParentChannelCommandHelper commandHelper;
 
     @Override
     public void init() {
@@ -42,10 +40,7 @@ public class CreateNewSubcommand extends SubSlashCommand {
 
         Guild guild = Objects.requireNonNull(event.getGuild());
 
-        if (parentChannelService.countParentChannels(guild.getIdLong()) >= 1) {
-            replyError(event, "You can only have one parent channel per guild.");
-            return;
-        }
+        if (commandHelper.checkLimitAndReply(guild.getIdLong(), event)) return;
 
         log.debug("Attempting to create channel: {} with prefix: {} in category: {}", name, prefix, categoryOption);
 
@@ -55,51 +50,13 @@ public class CreateNewSubcommand extends SubSlashCommand {
                 : guild.createVoiceChannel(name);
 
         action.queue(
-                channel -> handleSuccess(event, channel, prefix),
+                channel -> commandHelper.saveAndReplySuccess(event, channel, prefix),
                 error -> replyError(event, "Failed to create voice channel: " + error.getMessage(), error)
         );
     }
 
-    private void handleSuccess(SlashCommandInteractionEvent event, VoiceChannel channel, String prefix) {
-        saveParentToDb(channel, prefix);
-
-        Category parentCategory = channel.getParentCategory();
-        String categoryName = parentCategory != null ? parentCategory.getName() : "None";
-
-        EmbedBuilder embed = new EmbedBuilder()
-                .setTitle("✅ Command Successful!")
-                .setDescription("Successfully created voice channel")
-                .addField("Parent Channel", channel.getAsMention(), false)
-                .addField("Category", categoryName, false)
-                .addField("Prefix", "`" + prefix + "`", false)
-                .setColor(Color.GREEN);
-
-        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
-        log.debug("Successfully created and logged voice channel: {}", channel.getId());
-    }
-
     private void replyError(SlashCommandInteractionEvent event, String description, Throwable error) {
         log.error("Failed to create voice channel. Error: ", error);
-        replyError(event, description);
-    }
-
-    private void replyError(SlashCommandInteractionEvent event, String description) {
-        EmbedBuilder embed = new EmbedBuilder()
-                .setTitle("❌ Command Failed!")
-                .setDescription(description)
-                .setColor(Color.RED);
-
-        log.error("Failed to create voice channel: {}", description);
-        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
-    }
-
-    private void saveParentToDb(VoiceChannel channel, String prefix) {
-        parentChannelService.saveParentChannel(
-                ParentChannelDto.builder()
-                        .channelId(channel.getIdLong())
-                        .guildId(channel.getGuild().getIdLong())
-                        .prefix(prefix)
-                        .build()
-        );
+        commandHelper.replyError(event, description);
     }
 }
