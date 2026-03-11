@@ -52,7 +52,7 @@ public class ChannelEventService {
                                     .channelId(tempChannel.getIdLong())
                                     .ownerId(ownerId)
                                     .count(nextNumber)
-                                    .parentChannel(parentChannelService.getParentChannel(parentId))
+                                    .parentChannelId(parentId)
                                     .build()
                     );
 

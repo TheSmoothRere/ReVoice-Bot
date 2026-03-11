@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface ParentChannelRepository extends JpaRepository<ParentChannelEntity, Long> {
     Optional<ParentChannelEntity> findByChannelIdAndDeletedFalse(Long channelId);
 
+    Optional<ParentChannelEntity> findByChannelId(Long channelId);
+
     boolean existsByChannelId(Long channelId);
 
     @Transactional

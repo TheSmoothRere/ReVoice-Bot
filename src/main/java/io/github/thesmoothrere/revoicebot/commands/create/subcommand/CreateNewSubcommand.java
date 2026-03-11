@@ -90,7 +90,7 @@ public class CreateNewSubcommand extends SubSlashCommand {
         parentChannelService.saveParentChannel(
                 ParentChannelDto.builder()
                         .channelId(channel.getIdLong())
-                        .guild(guildService.getGuild(channel.getGuild().getIdLong()))
+                        .guildId(channel.getGuild().getIdLong())
                         .prefix(prefix)
                         .build()
         );

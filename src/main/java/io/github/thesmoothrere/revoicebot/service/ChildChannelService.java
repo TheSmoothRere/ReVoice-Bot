@@ -1,20 +1,17 @@
 package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.dto.ChildChannelDto;
-import io.github.thesmoothrere.revoicebot.dto.PrefixDto;
 import io.github.thesmoothrere.revoicebot.entity.ChildChannelEntity;
+import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
+import io.github.thesmoothrere.revoicebot.exception.ParentChannelNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
+import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import org.jspecify.annotations.NonNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.EnumSet;
 import java.util.List;
 
 @Slf4j
@@ -25,6 +22,7 @@ public class ChildChannelService {
 
     private final RedisTemplate<String, Long> redisTemplate;
     private final ChildChannelRepository childChannelRepository;
+    private final ParentChannelRepository parentChannelRepository;
 
     public String getAlphabetLabel(int number) {
         StringBuilder result = new StringBuilder();
@@ -69,7 +67,11 @@ public class ChildChannelService {
         entity.setChannelId(channelId);
         entity.setOwnerId(childChannelDto.getOwnerId());
         entity.setCount(childChannelDto.getCount());
-        entity.setParentChannel(childChannelDto.getParentChannel());
+
+        ParentChannelEntity parentChannel = parentChannelRepository.findByChannelId(childChannelDto.getParentChannelId()).orElseThrow(
+                () -> new ParentChannelNotFoundException("Parent channel not found for channel ID: " + childChannelDto.getParentChannelId()
+        ));
+        entity.setParentChannel(parentChannel);
 
         childChannelRepository.save(entity);
     }

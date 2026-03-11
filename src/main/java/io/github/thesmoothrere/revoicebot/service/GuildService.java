@@ -1,7 +1,6 @@
 package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
-import io.github.thesmoothrere.revoicebot.exception.GuildEntityNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.GuildRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +32,6 @@ public class GuildService {
         }
 
         return entity; // Already exists and active, just return it
-    }
-
-    public GuildEntity getGuild(Long guildId) {
-        return guildRepository.findByGuildId(guildId).orElseThrow(
-                () -> new GuildEntityNotFoundException("Guild not found for guild ID: " + guildId)
-        );
     }
 
     public void updateDeleteStatus(Long guildId) {

@@ -2,8 +2,10 @@ package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
 import io.github.thesmoothrere.revoicebot.dto.UpdatePrefixDto;
+import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
 import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
-import io.github.thesmoothrere.revoicebot.exception.ParentChannelNotFoundException;
+import io.github.thesmoothrere.revoicebot.exception.GuildEntityNotFoundException;
+import io.github.thesmoothrere.revoicebot.repository.GuildRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ParentChannelService {
     private final ParentChannelRepository parentChannelRepository;
+    private final GuildRepository guildRepository;
 
     public String getPrefix(Long channelId) {
         return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId)
@@ -33,18 +36,16 @@ public class ParentChannelService {
         return parentChannelRepository.existsByChannelId(channelId);
     }
 
-    public ParentChannelEntity getParentChannel(Long channelId) {
-        return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId).orElseThrow(
-                () -> new ParentChannelNotFoundException("Parent channel not found for channel ID: " + channelId)
-        );
-    }
-
     @Transactional
     public ParentChannelEntity saveParentChannel(ParentChannelDto channelDto) {
         ParentChannelEntity entity = new ParentChannelEntity();
         entity.setChannelId(channelDto.getChannelId());
         entity.setPrefix(channelDto.getPrefix());
-        entity.setGuild(channelDto.getGuild());
+
+        GuildEntity guild = guildRepository.findByGuildId(channelDto.getGuildId()).orElseThrow(
+                () -> new GuildEntityNotFoundException("Guild not found for guild ID: " + channelDto.getGuildId())
+        );
+        entity.setGuild(guild);
         return parentChannelRepository.save(entity);
     }
 }

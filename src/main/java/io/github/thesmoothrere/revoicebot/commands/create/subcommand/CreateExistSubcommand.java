@@ -84,7 +84,7 @@ public class CreateExistSubcommand extends SubSlashCommand {
         parentChannelService.saveParentChannel(
                 ParentChannelDto.builder()
                         .channelId(channel.getIdLong())
-                        .guild(guildService.getGuild(guildId))
+                        .guildId(guildId)
                         .prefix(prefix)
                         .build()
         );

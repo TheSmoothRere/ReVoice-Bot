@@ -38,7 +38,7 @@ public class ParentChannelEntity {
     @OneToMany(mappedBy = "parentChannel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChildChannelEntity> childChannels = new ArrayList<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "guild_id")
     private GuildEntity guild;
 

@@ -1,6 +1,5 @@
 package io.github.thesmoothrere.revoicebot.dto;
 
-import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +15,6 @@ public class ParentChannelDto {
     @NotNull(message = "Prefix cannot be null")
     private String prefix;
 
-    @NotNull(message = "Guild cannot be null")
-    private GuildEntity guild;
+    @NotNull(message = "Guild ID cannot be null")
+    private Long guildId;
 }

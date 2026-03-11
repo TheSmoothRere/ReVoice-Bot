@@ -35,7 +35,7 @@ public class ChildChannelEntity {
 
     private Boolean deleted;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_channel_id")
     private ParentChannelEntity parentChannel;
 
