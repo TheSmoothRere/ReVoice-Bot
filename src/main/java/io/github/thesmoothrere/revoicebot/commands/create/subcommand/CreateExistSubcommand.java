@@ -2,6 +2,7 @@ package io.github.thesmoothrere.revoicebot.commands.create.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
+import io.github.thesmoothrere.revoicebot.service.GuildService;
 import io.github.thesmoothrere.revoicebot.service.ParentChannelService;
 import io.github.thesmoothrere.revoicebot.util.OptionCommandNameUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class CreateExistSubcommand extends SubSlashCommand {
     private final ParentChannelService parentChannelService;
+    private final GuildService guildService;
 
     @Override
     public void init() {
@@ -82,7 +84,7 @@ public class CreateExistSubcommand extends SubSlashCommand {
         parentChannelService.saveParentChannel(
                 ParentChannelDto.builder()
                         .channelId(channel.getIdLong())
-                        .guildId(guildId)
+                        .guild(guildService.getGuild(guildId))
                         .prefix(prefix)
                         .build()
         );

@@ -7,27 +7,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "child_channels", indexes = {
-        @Index(name = "idx_child_channels_channel_id", columnList = "channelId", unique = true),
-        @Index(name = "idx_child_channel", columnList = "parent_channel_id, count, deleted")
+@Table(name = "guilds", indexes = {
+        @Index(name = "idx_guild_guildid", columnList = "guildId")
 })
-public class ChildChannelEntity {
+public class GuildEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NaturalId
-    private Long channelId;
+    @Column(nullable = false)
+    private Long guildId;
 
     @Column(nullable = false)
-    private Long ownerId;
-
-    @Column(nullable = false)
-    private String count;
+    private Boolean premium;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -35,12 +34,12 @@ public class ChildChannelEntity {
 
     private Boolean deleted;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "parent_channel_id")
-    private ParentChannelEntity parentChannel;
+    @OneToMany(mappedBy = "guild", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ParentChannelEntity> parentChannels = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
         deleted = false;
+        premium = false;
     }
 }

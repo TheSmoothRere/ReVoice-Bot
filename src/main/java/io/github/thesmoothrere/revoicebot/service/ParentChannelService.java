@@ -8,6 +8,7 @@ import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -17,7 +18,7 @@ public class ParentChannelService {
 
     public String getPrefix(Long channelId) {
         return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId)
-                .map(ParentChannelEntity::getPrefix).orElse(null);
+                .map(ParentChannelEntity::getPrefix).orElse("No Prefix");
     }
 
     public void updatePrefix(UpdatePrefixDto updatePrefixDto) {
@@ -38,11 +39,12 @@ public class ParentChannelService {
         );
     }
 
+    @Transactional
     public ParentChannelEntity saveParentChannel(ParentChannelDto channelDto) {
         ParentChannelEntity entity = new ParentChannelEntity();
         entity.setChannelId(channelDto.getChannelId());
-        entity.setGuildId(channelDto.getGuildId());
         entity.setPrefix(channelDto.getPrefix());
+        entity.setGuild(channelDto.getGuild());
         return parentChannelRepository.save(entity);
     }
 }

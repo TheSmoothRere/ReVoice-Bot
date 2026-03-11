@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -24,64 +25,8 @@ public class ChildChannelService {
 
     private final RedisTemplate<String, Long> redisTemplate;
     private final ChildChannelRepository childChannelRepository;
-    private final ParentChannelService parentChannelService;
-    private final PrefixService prefixService;
 
-    public void handleJoinedChannel(@NonNull VoiceChannel parentChannel, @NonNull Member member) {
-        long parentId = parentChannel.getIdLong();
-
-        // Verify this is a registered parent channel
-        if (!parentChannelService.isParentChannelExist(parentId)) return;
-
-        String memberName = member.getEffectiveName();
-        log.debug("Member {} joined parent channel {}. Creating temporary channel.", memberName, parentId);
-
-        // Create the channel with the correct name immediately
-        long ownerId = member.getIdLong();
-        PrefixDto prefixDto = new PrefixDto(parentChannelService.getPrefix(parentId));
-        prefixDto.setDisplayName(memberName);
-        String nextNumber = getNextNumber(parentId);
-        prefixDto.setNumber(nextNumber);
-        prefixDto.setAlphabet(getAlphabetLabel(Integer.parseInt(nextNumber)));
-        parentChannel.createCopy()
-                .addMemberPermissionOverride(
-                        ownerId,
-                        EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MOVE_OTHERS),
-                        null
-                )
-                .setName(prefixService.resolvePrefix(prefixDto))
-                .queue(tempChannel -> {
-                    // Sequence: Move member -> Save to DB/Redis
-                    tempChannel.getGuild().moveVoiceMember(member, tempChannel).queue();
-
-                    persistChildChannel(
-                            ChildChannelDto.builder()
-                                    .channelId(tempChannel.getIdLong())
-                                    .ownerId(ownerId)
-                                    .count(nextNumber)
-                                    .parentChannel(parentChannelService.getParentChannel(parentId))
-                                    .build()
-                    );
-
-                    log.info("Created temporary channel {} for {}", tempChannel.getId(), memberName);
-                }, throwable -> log.error("Failed to create temporary channel for {}", memberName, throwable));
-    }
-
-    public void handleLeftChannel(@NonNull VoiceChannel leftChannel) {
-        long channelId = leftChannel.getIdLong();
-
-        // Check if it's a managed child channel and is now empty
-        if (isManagedChild(channelId) && leftChannel.getMembers().isEmpty()) {
-            log.debug("Deleting empty temporary channel: {}", leftChannel.getName());
-
-            leftChannel.delete().queue(
-                    success -> clearMetadata(channelId),
-                    error -> log.error("Could not delete channel {}", channelId, error)
-            );
-        }
-    }
-
-    private String getAlphabetLabel(int number) {
+    public String getAlphabetLabel(int number) {
         StringBuilder result = new StringBuilder();
 
         while (number > 0) {
@@ -96,7 +41,7 @@ public class ChildChannelService {
     }
 
     // Note: if someday need to sharding this bot. this method will not work anymore as intended
-    private synchronized String getNextNumber(long parentId) {
+    public synchronized String getNextNumber(long parentId) {
         List<Integer> activeCounts = childChannelRepository.findActiveCounts(parentId);
 
         int nextAvailable = 1;
@@ -112,7 +57,8 @@ public class ChildChannelService {
         return String.valueOf(nextAvailable);
     }
 
-    private void persistChildChannel(ChildChannelDto childChannelDto) {
+    @Transactional
+    public void persistChildChannel(ChildChannelDto childChannelDto) {
         long channelId = childChannelDto.getChannelId();
 
         // Save to Redis for fast lookup during voice state changes
@@ -134,7 +80,7 @@ public class ChildChannelService {
         childChannelRepository.updateDeleteStatus(true, childChannelId);
     }
 
-    private boolean isManagedChild(long channelId) {
+    public boolean isManagedChild(long channelId) {
         Long cachedId = redisTemplate.opsForValue().get(getRedisKey(channelId));
         if (cachedId != null) return true;
 
