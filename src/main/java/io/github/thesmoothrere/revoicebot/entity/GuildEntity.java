@@ -3,10 +3,8 @@ package io.github.thesmoothrere.revoicebot.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.NaturalId;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +14,7 @@ import java.util.List;
 @Table(name = "guilds", indexes = {
         @Index(name = "idx_guild_guildid", columnList = "guildId")
 })
-public class GuildEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class GuildEntity extends BaseEntity {
     @NaturalId
     @Column(nullable = false)
     private Long guildId;
@@ -28,18 +22,12 @@ public class GuildEntity {
     @Column(nullable = false)
     private Boolean premium;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private Instant createdAt;
-
-    private Boolean deleted;
-
     @OneToMany(mappedBy = "guild", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParentChannelEntity> parentChannels = new ArrayList<>();
 
-    @PrePersist
+    @Override
     public void prePersist() {
-        deleted = false;
+        super.prePersist();
         premium = false;
     }
 }
