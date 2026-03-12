@@ -4,7 +4,7 @@ import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
 import io.github.thesmoothrere.revoicebot.dto.UpdatePrefixDto;
 import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
 import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
-import io.github.thesmoothrere.revoicebot.exception.GuildEntityNotFoundException;
+import io.github.thesmoothrere.revoicebot.exception.GuildNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.GuildRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class ParentChannelService {
         entity.setPrefix(channelDto.getPrefix());
 
         GuildEntity guild = guildRepository.findByGuildId(channelDto.getGuildId()).orElseThrow(
-                () -> new GuildEntityNotFoundException("Guild not found for guild ID: " + channelDto.getGuildId())
+                () -> new GuildNotFoundException("Guild not found for guild ID: " + channelDto.getGuildId())
         );
         entity.setGuild(guild);
         parentChannelRepository.save(entity);

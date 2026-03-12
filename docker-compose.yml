@@ -1,0 +1,47 @@
+services:
+  revoice-bot:
+    build: .
+    container_name: revoice-bot
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - SPRING_PROFILE_ACTIVE=prod
+      - DB_URL=postgres:5432/revoice
+      - DB_USER=revoice
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+    ports:
+      - "8080:8080"
+    networks:
+      - revoice-net
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=revoice
+      - POSTGRES_USER=revoice
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/18/main
+    ports:
+      - "5432:5432"
+    networks:
+      - revoice-net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - revoice-net
+
+volumes:
+  postgres-data:
+
+networks:
+  revoice-net:
