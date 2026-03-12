@@ -31,13 +31,13 @@ public class ChannelEventService {
 
         // Create the channel with the correct name immediately
         long ownerId = member.getIdLong();
-        PrefixDto prefixDto = new PrefixDto(parentChannelService.getPrefix(parentId));
-        prefixDto.setDisplayName(memberName);
-        String nextNumber = childChannelService.getNextNumber(parentId);
-        prefixDto.setNumber(nextNumber);
-        prefixDto.setAlphabet(
-                childChannelService.getAlphabetLabel(Integer.parseInt(nextNumber))
-        );
+        int nextNumber = childChannelService.getNextNumber(parentId);
+        PrefixDto prefixDto = PrefixDto.builder()
+                .template(parentChannelService.getPrefix(parentId))
+                .displayName(memberName)
+                .number(String.valueOf(nextNumber))
+                .alphabet(childChannelService.getAlphabetLabel(nextNumber))
+                .build();
         parentChannel.createCopy()
                 .addMemberPermissionOverride(
                         ownerId,

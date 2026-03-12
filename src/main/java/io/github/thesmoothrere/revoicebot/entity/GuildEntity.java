@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.NaturalId;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +21,12 @@ public class GuildEntity extends BaseEntity {
     private Long guildId;
 
     @Column(nullable = false)
-    private Boolean premium;
+    private Boolean premium = false;
+
+    private Instant premiumStartedAt;
+
+    private Instant premiumExpiresAt;
 
     @OneToMany(mappedBy = "guild", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParentChannelEntity> parentChannels = new ArrayList<>();
-
-    @Override
-    public void prePersist() {
-        super.prePersist();
-        premium = false;
-    }
 }

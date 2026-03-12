@@ -2,16 +2,18 @@ package io.github.thesmoothrere.revoicebot.config;
 
 import io.github.thesmoothrere.revoicebot.command.*;
 import io.github.thesmoothrere.revoicebot.listener.*;
-import lombok.extern.slf4j.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class DiscordBotConfiguration {
     /**
      * The bot token from the Discord Developer Portal.

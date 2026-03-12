@@ -39,7 +39,7 @@ public class ChildChannelService {
     }
 
     // Note: if someday need to sharding this bot. this method will not work anymore as intended
-    public synchronized String getNextNumber(long parentId) {
+    public synchronized int getNextNumber(long parentId) {
         List<Integer> activeCounts = childChannelRepository.findActiveCounts(parentId);
 
         int nextAvailable = 1;
@@ -52,7 +52,7 @@ public class ChildChannelService {
         }
 
         log.debug("Next available number for parent channel {}: {}", parentId, nextAvailable);
-        return String.valueOf(nextAvailable);
+        return nextAvailable;
     }
 
     @Transactional

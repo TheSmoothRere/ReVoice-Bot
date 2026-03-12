@@ -20,7 +20,7 @@ public class ChildChannelEntity extends BaseEntity {
     private Long ownerId;
 
     @Column(nullable = false)
-    private String count;
+    private Integer count;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_channel_id")

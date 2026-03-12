@@ -19,10 +19,6 @@ public class BaseEntity {
     @Column(updatable = false)
     private Instant createdAt;
 
-    private Boolean deleted;
-
-    @PrePersist
-    public void prePersist() {
-        deleted = false;
-    }
+    @Column(nullable = false)
+    private Boolean deleted = false;
 }
