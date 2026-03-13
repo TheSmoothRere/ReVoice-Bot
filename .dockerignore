@@ -4,5 +4,7 @@ build
 *.log
 .git
 .gitignore
+.gitattributes
+LICENSE.md
 Dockerfile
 .dockerignore
