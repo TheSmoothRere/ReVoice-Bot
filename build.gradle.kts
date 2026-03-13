@@ -6,7 +6,7 @@ plugins {
 
 group = "io.github.thesmoothrere"
 version = "0.0.1-SNAPSHOT"
-description = "Template to create Discord Bot using SpringBoot"
+description = "Automatically create temporary channel"
 
 java {
     toolchain {

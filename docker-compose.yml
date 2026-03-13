@@ -6,15 +6,13 @@ services:
       - postgres
       - redis
     environment:
-      - SPRING_PROFILE_ACTIVE=prod
-      - DB_URL=postgres:5432/revoice
-      - DB_USER=revoice
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=${DB_URL}
+      - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - REDIS_URL=redis
-      - REDIS_PORT=6379
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PORT=${REDIS_PORT}
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
-    ports:
-      - "8080:8080"
     networks:
       - revoice-net
 
@@ -23,7 +21,7 @@ services:
     container_name: postgres
     environment:
       - POSTGRES_DB=revoice
-      - POSTGRES_USER=revoice
+      - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/18/main

@@ -5,7 +5,10 @@ WORKDIR /app
 # Copy only files needed to resolve dependencies
 COPY gradlew .
 COPY gradle gradle
-COPY build.gradle.kts settings.gradle.kts ./
+COPY build.gradle.kts settings.gradle.kts gradle.properties ./
+
+# Grant execution permissions (Crucial for Linux)
+RUN chmod +x gradlew
 
 # PRE-BUILD: Download dependencies (this layer is only re-run if build.gradle.kts changes)
 RUN ./gradlew dependencies --no-daemon
@@ -25,4 +28,4 @@ USER spring:spring
 ENV SPRING_PROFILES_ACTIVE=prod
 
 COPY --from=builder /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xms500M", "-Xmx500M", "-XX:MaxMetaspaceSize=256M", "-jar", "app.jar"]
