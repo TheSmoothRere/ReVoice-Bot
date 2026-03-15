@@ -12,6 +12,8 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_URL=${REDIS_URL}
       - REDIS_PORT=${REDIS_PORT}
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
     networks:
       - revoice-net
