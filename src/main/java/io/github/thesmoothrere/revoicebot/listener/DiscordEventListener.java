@@ -63,7 +63,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        guildService.updateDeleteStatus(event.getGuild().getIdLong());
+        guildService.updateDeleteStatusTrue(event.getGuild().getIdLong());
     }
 
     @Override

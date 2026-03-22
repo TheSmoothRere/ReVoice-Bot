@@ -2,9 +2,11 @@
 build
 .idea
 *.log
+bin
 .git
 .gitignore
 .gitattributes
 LICENSE.md
 Dockerfile
 .dockerignore
+.env.*

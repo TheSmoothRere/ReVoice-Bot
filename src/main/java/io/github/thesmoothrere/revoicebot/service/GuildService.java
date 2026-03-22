@@ -32,7 +32,7 @@ public class GuildService {
         }
     }
 
-    public void updateDeleteStatus(Long guildId) {
+    public void updateDeleteStatusTrue(Long guildId) {
         guildRepository.updateDeletedByGuildId(true, guildId);
     }
 }
