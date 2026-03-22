@@ -1,7 +1,6 @@
 package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
-import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
 import io.github.thesmoothrere.revoicebot.repository.GuildRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;

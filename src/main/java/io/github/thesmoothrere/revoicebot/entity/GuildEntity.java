@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "guilds", indexes = {
-        @Index(name = "idx_guild_guildid", columnList = "guildId")
+        @Index(name = "idx_guild_guild_id", columnList = "guildId", unique = true)
 })
 public class GuildEntity extends BaseEntity {
     @NaturalId

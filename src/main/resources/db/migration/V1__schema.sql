@@ -7,7 +7,7 @@ CREATE TABLE guilds (
                         deleted boolean NOT NULL,
                         created_at timestamp(6) WITH TIME ZONE,
                         PRIMARY KEY (id),
-                        UNIQUE (guild_id)
+                        CONSTRAINT idx_guild_guild_id UNIQUE (guild_id)
 );
 
 CREATE TABLE parent_channels (
@@ -34,7 +34,6 @@ CREATE TABLE child_channels (
 );
 
 CREATE INDEX idx_child_channel ON child_channels (parent_channel_id, count, deleted);
-CREATE INDEX idx_guild_guildid ON guilds (guild_id);
 CREATE INDEX idx_parent_channel ON parent_channels (prefix, deleted);
 
 ALTER TABLE IF EXISTS child_channels
