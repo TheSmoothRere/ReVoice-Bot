@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,4 +29,7 @@ public interface ParentChannelRepository extends JpaRepository<ParentChannelEnti
     void updatePrefix(String prefix, Long channelId);
 
     long countByGuild_GuildIdAndDeletedFalse(Long guildId);
+
+    @Query("select p from ParentChannelEntity p join fetch p.guild g where g.guildId = ?1 and p.deleted = false")
+    List<ParentChannelEntity> getAllParentChannels(Long guildId);
 }

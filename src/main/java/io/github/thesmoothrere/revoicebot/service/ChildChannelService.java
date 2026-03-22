@@ -19,7 +19,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChildChannelService {
-
     private final ChildChannelRepository childChannelRepository;
     private final ParentChannelRepository parentChannelRepository;
 

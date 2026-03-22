@@ -23,4 +23,7 @@ public interface ChildChannelRepository extends JpaRepository<ChildChannelEntity
             where c.parentChannel.channelId = ?1 and c.deleted = false
             order by c.count""")
     List<Integer> findActiveCounts(Long channelId);
+
+    @Query("select c from ChildChannelEntity c join fetch c.parentChannel p join fetch p.guild g where g.guildId = ?1 and c.deleted = false")
+    List<ChildChannelEntity> getAllChildChannels(Long guildId);
 }
