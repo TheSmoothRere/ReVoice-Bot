@@ -32,6 +32,7 @@ public class ParentChannelService {
         parentChannelRepository.updateDeleteStatus(true, channelId);
     }
 
+    // TODO: use redis cache
     public boolean isParentChannelExist(Long channelId) {
         return parentChannelRepository.existsByChannelId(channelId);
     }

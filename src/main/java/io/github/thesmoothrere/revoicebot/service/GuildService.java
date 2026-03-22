@@ -32,7 +32,12 @@ public class GuildService {
         }
     }
 
-    public void updateDeleteStatusTrue(Long guildId) {
+    // TODO: use redis to cache
+    public boolean isGuildExist(Long guildId) {
+        return guildRepository.existsByGuildIdAndDeletedFalse(guildId);
+    }
+
+    public void removeGuild(Long guildId) {
         guildRepository.updateDeletedByGuildId(true, guildId);
     }
 }

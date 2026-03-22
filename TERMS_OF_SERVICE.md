@@ -26,4 +26,4 @@ The developers of RéVoice-Bot are not responsible for any damages arising from 
 We reserve the right to update these Terms of Service at any time. Continued use of the Bot constitutes acceptance of the new terms.
 
 ## 7. Contact
-If you have any questions about these Terms, please contact the developer via [Server Link](https://discord.gg/SPfjT5SJ4Q).
+If you have any questions about these Terms, please contact the developer via [Support Server](https://discord.gg/SPfjT5SJ4Q).

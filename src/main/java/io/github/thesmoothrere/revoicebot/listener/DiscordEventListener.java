@@ -35,6 +35,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
     @Override
     public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {
+        if (!guildService.isGuildExist(event.getGuild().getIdLong())) return;
         if (event.getChannelJoined() instanceof VoiceChannel voiceChannel) {
             channelEventService.handleJoinedChannel(voiceChannel, event.getMember());
         }
@@ -63,7 +64,7 @@ public class DiscordEventListener extends ListenerAdapter {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent event) {
-        guildService.updateDeleteStatusTrue(event.getGuild().getIdLong());
+        guildService.removeGuild(event.getGuild().getIdLong());
     }
 
     @Override

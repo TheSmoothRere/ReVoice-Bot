@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface GuildRepository extends JpaRepository<GuildEntity, Long> {
     Optional<GuildEntity> findByGuildId(Long guildId);
 
+    boolean existsByGuildIdAndDeletedFalse(Long guildId);
+
     @Transactional
     @Modifying
     @Query("update GuildEntity g set g.deleted = ?1 where g.guildId = ?2")
