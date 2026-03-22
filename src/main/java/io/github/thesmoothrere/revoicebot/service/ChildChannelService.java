@@ -8,7 +8,8 @@ import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,9 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChildChannelService {
-    private static final String REDIS_KEY_PREFIX = "channel:id:";
 
-    private final RedisTemplate<String, Long> redisTemplate;
     private final ChildChannelRepository childChannelRepository;
     private final ParentChannelRepository parentChannelRepository;
 
@@ -56,11 +55,9 @@ public class ChildChannelService {
     }
 
     @Transactional
-    public void persistChildChannel(ChildChannelDto childChannelDto) {
+    @CacheEvict(value = "childChannels", key = "#childChannelDto.channelId")
+    public void saveChildChannel(ChildChannelDto childChannelDto) {
         long channelId = childChannelDto.getChannelId();
-
-        // Save to Redis for fast lookup during voice state changes
-        saveToCache(channelId);
 
         // Save to Database
         ChildChannelEntity entity = new ChildChannelEntity();
@@ -76,34 +73,12 @@ public class ChildChannelService {
         childChannelRepository.save(entity);
     }
 
-    public void clearMetadata(long childChannelId) {
-        log.debug("Clearing metadata for child channel: {}", childChannelId);
-        removeFromCache(childChannelId);
-        childChannelRepository.updateDeleteStatus(true, childChannelId);
+    @CacheEvict(value = "childChannels", key = "#channelId")
+    public void removeChildChannel(long channelId) {
+        childChannelRepository.updateDeleteStatus(true, channelId);
     }
 
-    public boolean isManagedChild(long channelId) {
-        Long cachedId = redisTemplate.opsForValue().get(getRedisKey(channelId));
-        if (cachedId != null) return true;
-
-        // Fallback to DB if Redis is empty/down
-        return isChildChannelExist(channelId);
-    }
-
-    // --- Helper Methods ---
-
-    private void saveToCache(long channelId) {
-        redisTemplate.opsForValue().set(getRedisKey(channelId), channelId);
-    }
-
-    private void removeFromCache(long channelId) {
-        redisTemplate.delete(getRedisKey(channelId));
-    }
-
-    private String getRedisKey(long channelId) {
-        return REDIS_KEY_PREFIX + channelId;
-    }
-
+    @Cacheable(value = "childChannels", key = "#channelId")
     public boolean isChildChannelExist(long channelId) {
         return childChannelRepository.existsByChannelId(channelId);
     }

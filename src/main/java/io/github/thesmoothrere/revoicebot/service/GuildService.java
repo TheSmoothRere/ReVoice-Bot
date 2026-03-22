@@ -4,6 +4,8 @@ import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
 import io.github.thesmoothrere.revoicebot.repository.GuildRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ public class GuildService {
     private final GuildRepository guildRepository;
 
     @Transactional // Essential for data consistency
+    @CacheEvict(value = "guilds", key = "#guildId")
     public void saveGuild(Long guildId) {
         // 1. Find by ID only (ignore the deleted flag for the search)
         GuildEntity entity = guildRepository.findByGuildId(guildId)
@@ -32,11 +35,12 @@ public class GuildService {
         }
     }
 
-    // TODO: use redis to cache
+    @Cacheable(value = "guilds", key = "#guildId")
     public boolean isGuildExist(Long guildId) {
         return guildRepository.existsByGuildIdAndDeletedFalse(guildId);
     }
 
+    @CacheEvict(value = "guilds", key = "#guildId")
     public void removeGuild(Long guildId) {
         guildRepository.updateDeletedByGuildId(true, guildId);
     }

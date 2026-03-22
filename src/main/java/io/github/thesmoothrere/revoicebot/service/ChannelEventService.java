@@ -52,7 +52,7 @@ public class ChannelEventService {
                     // Sequence: Move member -> Save to DB/Redis
                     tempChannel.getGuild().moveVoiceMember(member, tempChannel).queue();
 
-                    childChannelService.persistChildChannel(
+                    childChannelService.saveChildChannel(
                             ChildChannelDto.builder()
                                     .channelId(tempChannel.getIdLong())
                                     .ownerId(ownerId)
@@ -69,11 +69,11 @@ public class ChannelEventService {
         long channelId = leftChannel.getIdLong();
 
         // Check if it's a managed child channel and is now empty
-        if (childChannelService.isManagedChild(channelId) && leftChannel.getMembers().isEmpty()) {
+        if (childChannelService.isChildChannelExist(channelId) && leftChannel.getMembers().isEmpty()) {
             log.debug("Deleting empty temporary channel: {}", leftChannel.getName());
 
             leftChannel.delete().queue(
-                    success -> childChannelService.clearMetadata(channelId),
+                    _ -> childChannelService.removeChildChannel(channelId),
                     error -> log.error("Could not delete channel {}", channelId, error)
             );
         }

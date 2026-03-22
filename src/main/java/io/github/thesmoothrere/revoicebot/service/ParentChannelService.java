@@ -9,6 +9,10 @@ import io.github.thesmoothrere.revoicebot.repository.GuildRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParentChannelService {
     private final ParentChannelRepository parentChannelRepository;
     private final GuildRepository guildRepository;
+    private final CacheManager cacheManager;
 
     public String getPrefix(Long channelId) {
         return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId)
@@ -28,16 +33,26 @@ public class ParentChannelService {
         parentChannelRepository.updatePrefix(updatePrefixDto.getPrefix(), updatePrefixDto.getChannelId());
     }
 
+    @CacheEvict(value = "parentChannels", key = "#channelId")
     public void removeParentChannel(Long channelId) {
         parentChannelRepository.updateDeleteStatus(true, channelId);
     }
 
-    // TODO: use redis cache
+    public void resetParentChannelCache(Long channelId) {
+        Cache cache = cacheManager.getCache("parentChannels");
+        if (cache != null) {
+            cache.evict(channelId);
+            log.debug("Evicted channel {} from parentChannels cache", channelId);
+        }
+    }
+
+    @Cacheable(value = "parentChannels", key = "#channelId")
     public boolean isParentChannelExist(Long channelId) {
         return parentChannelRepository.existsByChannelId(channelId);
     }
 
     @Transactional
+    @CacheEvict(value = "parentChannels", key = "#channelDto.channelId")
     public void saveParentChannel(ParentChannelDto channelDto) {
         ParentChannelEntity entity = new ParentChannelEntity();
         entity.setChannelId(channelDto.getChannelId());

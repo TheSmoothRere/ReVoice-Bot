@@ -48,12 +48,10 @@ public class DiscordEventListener extends ListenerAdapter {
     public void onChannelDelete(ChannelDeleteEvent event) {
         if (event.getChannel() instanceof VoiceChannel voiceChannel) {
             long channelId = voiceChannel.getIdLong();
-            if (parentChannelService.isParentChannelExist(channelId)) {
-                parentChannelService.removeParentChannel(channelId);
-            }
-            if (childChannelService.isChildChannelExist(channelId)) {
-                childChannelService.clearMetadata(channelId);
-            }
+            parentChannelService.resetParentChannelCache(channelId);
+
+            parentChannelService.removeParentChannel(channelId);
+            childChannelService.removeChildChannel(channelId);
         }
     }
 
