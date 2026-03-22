@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last Updated: [Date]**
+**Last Updated: Sunday, 22 March 2026**
 
 By inviting RéVoice-Bot ("the Bot") to your Discord server or using its features, you agree to these Terms of Service.
 
@@ -26,4 +26,4 @@ The developers of RéVoice-Bot are not responsible for any damages arising from 
 We reserve the right to update these Terms of Service at any time. Continued use of the Bot constitutes acceptance of the new terms.
 
 ## 7. Contact
-If you have any questions about these Terms, please contact the developer via [Insert Contact Method, e.g., Support Server Link or Email].
+If you have any questions about these Terms, please contact the developer via [Server Link](https://discord.gg/SPfjT5SJ4Q).
