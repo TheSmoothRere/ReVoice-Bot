@@ -28,7 +28,7 @@ public class ParentChannelService {
     private final ChildChannelService childChannelService;
 
     @Cacheable(value = "channelPrefixes", key = "#channelId")
-    public String getPrefix(Long channelId) {
+    public String getPrefix(long channelId) {
         return parentChannelRepository.findByChannelIdAndDeletedFalse(channelId)
                 .map(ParentChannelEntity::getPrefix).orElse("No Prefix");
     }
@@ -42,7 +42,7 @@ public class ParentChannelService {
             @CacheEvict(value = "parentChannels", key = "#channelId"),
             @CacheEvict(value = "channelPrefixes", key = "#channelId")
     })
-    public void removeParentChannel(Long channelId) {
+    public void removeParentChannel(long channelId) {
         parentChannelRepository.updateDeleteStatus(true, channelId);
         childChannelRepository.getAllChildChannels(channelId).forEach(
                 childChannel -> childChannelService.removeChildChannel(childChannel.getChannelId())
@@ -50,7 +50,7 @@ public class ParentChannelService {
     }
 
     // Manual evict because when join child channel and empty, the cache is no longer use
-    public void resetParentChannelCache(Long channelId) {
+    public void resetParentChannelCache(long channelId) {
         Cache cache = cacheManager.getCache("parentChannels");
         if (cache != null) {
             cache.evict(channelId);
@@ -59,7 +59,7 @@ public class ParentChannelService {
     }
 
     @Cacheable(value = "parentChannels", key = "#channelId")
-    public boolean isParentChannelExist(Long channelId) {
+    public boolean isParentChannelExist(long channelId) {
         return parentChannelRepository.existsByChannelId(channelId);
     }
 
@@ -69,7 +69,7 @@ public class ParentChannelService {
             @CacheEvict(value = "channelPrefixes", key = "#channelDto.channelId")
     })
     public void saveParentChannel(ParentChannelDto channelDto) {
-        Long channelId = channelDto.getChannelId();
+        long channelId = channelDto.getChannelId();
 
         ParentChannelEntity entity = parentChannelRepository.findByChannelId(channelId)
                 .orElseGet(() -> {
@@ -94,7 +94,7 @@ public class ParentChannelService {
         }
     }
 
-    public long countParentChannels(Long guildId) {
+    public long countParentChannels(long guildId) {
         return parentChannelRepository.countByGuild_GuildIdAndDeletedFalse(guildId);
     }
 }

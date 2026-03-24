@@ -20,7 +20,7 @@ public class GuildService {
 
     @Transactional // Essential for data consistency
     @CacheEvict(value = "guilds", key = "#guildId")
-    public void saveGuild(Long guildId) {
+    public void saveGuild(long guildId) {
         // 1. Find by ID only (ignore the deleted flag for the search)
         GuildEntity entity = guildRepository.findByGuildId(guildId)
                 .orElseGet(() -> {
@@ -39,12 +39,12 @@ public class GuildService {
     }
 
     @Cacheable(value = "guilds", key = "#guildId")
-    public boolean isGuildExist(Long guildId) {
+    public boolean isGuildExist(long guildId) {
         return guildRepository.existsByGuildIdAndDeletedFalse(guildId);
     }
 
     @CacheEvict(value = "guilds", key = "#guildId")
-    public void removeGuild(Long guildId) {
+    public void removeGuild(long guildId) {
         guildRepository.updateDeletedByGuildId(true, guildId);
         parentChannelRepository.getAllParentChannels(guildId).forEach(
                 parentChannel -> parentChannelService.removeParentChannel(parentChannel.getChannelId())

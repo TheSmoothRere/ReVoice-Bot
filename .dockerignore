@@ -7,6 +7,8 @@ bin
 .gitignore
 .gitattributes
 LICENSE.md
+PRIVACY_POLICY.md
+TERMS_OF_SERVICE.md
 Dockerfile
 .dockerignore
 .env.*

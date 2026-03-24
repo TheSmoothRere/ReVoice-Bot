@@ -2,7 +2,7 @@ package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.dto.ChildChannelDto;
 import io.github.thesmoothrere.revoicebot.entity.ChildChannelEntity;
-import io.github.thesmoothrere.revoicebot.exception.ParentChannelNotFoundException;
+import io.github.thesmoothrere.revoicebot.exception.ChildChannelNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +67,7 @@ public class ChildChannelService {
 
                     newEntity.setParentChannel(
                             parentChannelRepository.findByChannelId(childChannelDto.getParentChannelId())
-                                    .orElseThrow(() -> new ParentChannelNotFoundException(
+                                    .orElseThrow(() -> new ChildChannelNotFoundException(
                                             "Parent channel not found for channel ID: " + childChannelDto.getParentChannelId()
                                     ))
                     );
