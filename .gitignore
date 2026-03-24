@@ -39,3 +39,4 @@ out/
 src/main/resources/.env
 /src/main/resources/.env
 /.env.*
+/.env
