@@ -86,7 +86,8 @@ If you already have PostgreSQL and Redis running elsewhere, you can run the bot 
    ```
 
 2. **Run the Container**
-   Use the `-e` flag to pass your environment variables. Replace the values with your actual configuration.
+
+   You can pass environment variables using the `-e` flag:
 
    ```bash
    docker run -d --name revoice-bot \
@@ -99,6 +100,12 @@ If you already have PostgreSQL and Redis running elsewhere, you can run the bot 
      -e REDIS_USER="" \
      -e REDIS_PASSWORD="" \
      revoice-bot
+   ```
+
+   Alternatively, if you have an `.env` file prepared, you can use the `--env-file` flag:
+
+   ```bash
+   docker run -d --name revoice-bot --env-file .env revoice-bot
    ```
 
 ## ⚖️ Legal & Licensing
