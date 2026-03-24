@@ -41,7 +41,7 @@ It works by cloning a designated **trigger (parent) channel** whenever someone j
 
 2. **Clone the Repository**
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/TheSmoothRere/ReVoice-Bot.git
    cd ReVoice-Bot
    ```
 
@@ -100,3 +100,21 @@ If you already have PostgreSQL and Redis running elsewhere, you can run the bot 
      -e REDIS_PASSWORD="" \
      revoice-bot
    ```
+
+## ⚖️ Legal & Licensing
+
+### License
+
+This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
+
+> [\!IMPORTANT]
+> This means you are free to share and adapt the material, provided you give appropriate credit and do **not** use the material for commercial purposes.
+> [Read the full license here](https://creativecommons.org/licenses/by-nc/4.0/).
+
+### Terms of Service & Privacy
+
+To ensure transparency for your server members and compliance with Discord's Developer Terms, please refer to our official documentation:
+
+  * TERMS_OF_SERVICE.md – Guidelines on how to use the bot responsibly.
+  * PRIVACY_POLICY.md – Information on what data we collect (e.g., User IDs for channel ownership) and how it is handled.
+

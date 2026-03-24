@@ -1,6 +1,6 @@
 # Terms of Service
 
-**Last Updated: Sunday, 22 March 2026**
+**Last Updated: Tuesday, 24 March 2026**
 
 By inviting RéVoice-Bot ("the Bot") to your Discord server or using its features, you agree to these Terms of Service.
 
@@ -8,13 +8,12 @@ By inviting RéVoice-Bot ("the Bot") to your Discord server or using its feature
 By using the Bot, you agree to be bound by these terms. If you do not agree, please do not use the Bot.
 
 ## 2. Usage License
-RéVoice-Bot is provided free of charge for use on the Discord platform. You may not reverse engineer, modify, or distribute the Bot's source code without permission, unless permitted by the license (see LICENSE.md).
+RéVoice-Bot's source code is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**. You are free to share, adapt, and modify the code for personal or non-commercial use, provided you give appropriate credit as outlined in the LICENSE.md.
 
 ## 3. User Conduct
-You agree not to use the Bot for any unlawful purpose or in any way that could damage, disable, overburden, or impair the Bot's functionality. This includes, but is not limited to:
-- Spamming commands.
-- Attempting to exploit vulnerabilities.
-- Using the Bot to harass or harm others.
+You agree to use the Bot in compliance with [Discord’s Terms of Service](https://discord.com/terms) and [Community Guidelines](https://discord.com/guidelines). You may not use the Bot for any unlawful purpose or in any way that could damage, disable, or impair the Bot's functionality, including:
+- Spamming commands or attempting to exploit vulnerabilities.
+- Using the Bot to bypass server-specific permissions or harass users.
 
 ## 4. Availability
 The Bot is provided "as is" and "as available". We do not guarantee 100% uptime or that the service will be error-free. We reserve the right to modify or discontinue the Bot at any time without notice.
@@ -26,4 +25,4 @@ The developers of RéVoice-Bot are not responsible for any damages arising from 
 We reserve the right to update these Terms of Service at any time. Continued use of the Bot constitutes acceptance of the new terms.
 
 ## 7. Contact
-If you have any questions about these Terms, please contact the developer via [Support Server](https://discord.gg/SPfjT5SJ4Q).
+If you have any questions about these Terms, please contact the developer via [Server Link](https://discord.gg/SPfjT5SJ4Q).

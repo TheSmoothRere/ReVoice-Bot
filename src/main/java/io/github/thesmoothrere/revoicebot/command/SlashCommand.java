@@ -4,6 +4,7 @@ import jakarta.annotation.*;
 import lombok.*;
 import lombok.extern.slf4j.*;
 import net.dv8tion.jda.api.events.interaction.command.*;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 
 import java.util.*;
@@ -13,12 +14,14 @@ import java.util.*;
 public abstract class SlashCommand implements ISlashCommand {
     private String name;
     private String description;
+    private final List<OptionData> options;
     private final Map<String, SubSlashCommand> subcommands;
     private final Map<String, GroupSlashCommand> subcommandGroups;
 
     protected SlashCommand() {
         this.subcommands = new HashMap<>();
         this.subcommandGroups = new HashMap<>();
+        this.options = new ArrayList<>();
     }
 
     @PostConstruct
@@ -28,6 +31,10 @@ public abstract class SlashCommand implements ISlashCommand {
         nameAndDescriptionCheck(name, description);
 
         SlashCommandData data = Commands.slash(name, description);
+        if (!options.isEmpty()) {
+            log.debug("Adding {} options to command {}", options.size(), name);
+            data.addOptions(options);
+        }
         if (!subcommands.isEmpty()) {
             for (SubSlashCommand subcommand : subcommands.values()) {
                 log.debug("Adding subcommand {} to command {}", subcommand.getName(), name);
@@ -80,6 +87,12 @@ public abstract class SlashCommand implements ISlashCommand {
         this.name = name;
         this.description = description;
         return this;
+    }
+
+    public OptionData addOption(OptionType type, String name, String description, boolean required) {
+        OptionData data = new OptionData(type, name, description, required);
+        this.options.add(data);
+        return data;
     }
 
     public SlashCommand addSubcommand(SubSlashCommand subcommand) {
