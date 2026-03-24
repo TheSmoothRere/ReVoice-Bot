@@ -2,7 +2,6 @@ package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.dto.ChildChannelDto;
 import io.github.thesmoothrere.revoicebot.entity.ChildChannelEntity;
-import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
 import io.github.thesmoothrere.revoicebot.exception.ParentChannelNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
 import io.github.thesmoothrere.revoicebot.repository.ParentChannelRepository;
@@ -56,20 +55,31 @@ public class ChildChannelService {
     @Transactional
     @CacheEvict(value = "childChannels", key = "#childChannelDto.channelId")
     public void saveChildChannel(ChildChannelDto childChannelDto) {
-        long channelId = childChannelDto.getChannelId();
+        Long channelId = childChannelDto.getChannelId();
 
-        // Save to Database
-        ChildChannelEntity entity = new ChildChannelEntity();
-        entity.setChannelId(channelId);
-        entity.setOwnerId(childChannelDto.getOwnerId());
-        entity.setCount(childChannelDto.getCount());
+        ChildChannelEntity entity = childChannelRepository.findByChannelId(channelId)
+                .orElseGet(() -> {
+                    log.debug("Creating brand new ChildChannelEntity for channelId: {}", channelId);
+                    ChildChannelEntity newEntity = new ChildChannelEntity();
+                    newEntity.setChannelId(channelId);
+                    newEntity.setOwnerId(childChannelDto.getOwnerId());
+                    newEntity.setCount(childChannelDto.getCount());
 
-        ParentChannelEntity parentChannel = parentChannelRepository.findByChannelId(childChannelDto.getParentChannelId()).orElseThrow(
-                () -> new ParentChannelNotFoundException("Parent channel not found for channel ID: " + childChannelDto.getParentChannelId()
-        ));
-        entity.setParentChannel(parentChannel);
+                    newEntity.setParentChannel(
+                            parentChannelRepository.findByChannelId(childChannelDto.getParentChannelId())
+                                    .orElseThrow(() -> new ParentChannelNotFoundException(
+                                            "Parent channel not found for channel ID: " + childChannelDto.getParentChannelId()
+                                    ))
+                    );
 
-        childChannelRepository.save(entity);
+                    return childChannelRepository.save(newEntity);
+                });
+
+        if (Boolean.TRUE.equals(entity.getDeleted())) {
+            log.debug("Restoring ChildChannelEntity for channelId: {}", channelId);
+            entity.setDeleted(false);
+            childChannelRepository.save(entity);
+        }
     }
 
     @CacheEvict(value = "childChannels", key = "#channelId")

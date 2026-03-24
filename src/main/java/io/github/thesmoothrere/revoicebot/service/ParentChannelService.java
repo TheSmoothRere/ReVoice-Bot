@@ -2,7 +2,6 @@ package io.github.thesmoothrere.revoicebot.service;
 
 import io.github.thesmoothrere.revoicebot.dto.ParentChannelDto;
 import io.github.thesmoothrere.revoicebot.dto.UpdatePrefixDto;
-import io.github.thesmoothrere.revoicebot.entity.GuildEntity;
 import io.github.thesmoothrere.revoicebot.entity.ParentChannelEntity;
 import io.github.thesmoothrere.revoicebot.exception.GuildNotFoundException;
 import io.github.thesmoothrere.revoicebot.repository.ChildChannelRepository;
@@ -70,15 +69,29 @@ public class ParentChannelService {
             @CacheEvict(value = "channelPrefixes", key = "#channelDto.channelId")
     })
     public void saveParentChannel(ParentChannelDto channelDto) {
-        ParentChannelEntity entity = new ParentChannelEntity();
-        entity.setChannelId(channelDto.getChannelId());
-        entity.setPrefix(channelDto.getPrefix());
+        Long channelId = channelDto.getChannelId();
 
-        GuildEntity guild = guildRepository.findByGuildId(channelDto.getGuildId()).orElseThrow(
-                () -> new GuildNotFoundException("Guild not found for guild ID: " + channelDto.getGuildId())
-        );
-        entity.setGuild(guild);
-        parentChannelRepository.save(entity);
+        ParentChannelEntity entity = parentChannelRepository.findByChannelId(channelId)
+                .orElseGet(() -> {
+                    log.debug("Creating brand new ParentChannelEntity for channelId: {}", channelId);
+                    ParentChannelEntity newEntity = new ParentChannelEntity();
+                    newEntity.setChannelId(channelId);
+                    newEntity.setPrefix(channelDto.getPrefix());
+
+                    newEntity.setGuild(
+                            guildRepository.findByGuildId(channelDto.getGuildId()).orElseThrow(
+                                    () -> new GuildNotFoundException("Guild not found for guild ID: " + channelDto.getGuildId())
+                            )
+                    );
+
+                    return parentChannelRepository.save(newEntity);
+                });
+
+        if (Boolean.TRUE.equals(entity.getDeleted())) {
+            log.debug("Restoring ParentChannelEntity for channelId: {}", channelId);
+            entity.setDeleted(false);
+            parentChannelRepository.save(entity);
+        }
     }
 
     public long countParentChannels(Long guildId) {

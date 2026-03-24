@@ -8,10 +8,13 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChildChannelRepository extends JpaRepository<ChildChannelEntity, Long> {
     boolean existsByChannelId(Long channelId);
+
+    Optional<ChildChannelEntity> findByChannelId(Long channelId);
 
     @Transactional
     @Modifying
