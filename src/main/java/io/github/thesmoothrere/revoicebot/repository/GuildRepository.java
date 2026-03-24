@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,7 @@ public interface GuildRepository extends JpaRepository<GuildEntity, Long> {
     @Modifying
     @Query("update GuildEntity g set g.deleted = ?1 where g.guildId = ?2")
     void updateDeletedByGuildId(Boolean deleted, Long guildId);
+
+    @Query("select g from GuildEntity g where g.deleted = false")
+    List<GuildEntity> findAllActiveGuilds();
 }

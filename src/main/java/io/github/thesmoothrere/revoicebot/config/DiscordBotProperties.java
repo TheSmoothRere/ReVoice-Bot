@@ -16,4 +16,9 @@ public class DiscordBotProperties {
     @NotBlank(message = "Bot Token is required")
     @NotNull(message = "Bot Token is required")
     private String botToken;
+
+    /**
+     * Interval for cleaning up child channels (in milliseconds)
+     */
+    private long cleanupInterval = 300000;
 }

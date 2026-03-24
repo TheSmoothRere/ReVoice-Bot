@@ -8,18 +8,13 @@ import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
 public class DiscordBotConfiguration {
-    /**
-     * The bot token from the Discord Developer Portal.
-     */
-    @Value("${discord.bot-token}")
-    private String botToken;
+    private final DiscordBotProperties discordBotProperties;
 
     /**
      * * Creates and configures the JDA (Java Discord API) instance.
@@ -29,7 +24,7 @@ public class DiscordBotConfiguration {
      */
     @Bean
     public JDA jda(SlashCommandRegistrar slashCommandRegistrar, DiscordEventListener eventListener) throws InterruptedException {
-        JDA jda = JDABuilder.createDefault(botToken)
+        JDA jda = JDABuilder.createDefault(discordBotProperties.getBotToken())
                 .enableIntents(
                         GatewayIntent.GUILD_MESSAGES,
                         GatewayIntent.GUILD_PRESENCES,

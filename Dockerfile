@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM eclipse-temurin:21-jdk AS builder
+FROM eclipse-temurin:25-jdk AS builder
 WORKDIR /app
 
 # Copy only files needed to resolve dependencies
@@ -18,7 +18,7 @@ COPY src src
 RUN ./gradlew bootJar -x test --no-daemon
 
 # 2. Stage 2: Create the runtime image
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 
 # Best practice: Run as a non-root user for security

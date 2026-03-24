@@ -32,4 +32,7 @@ public interface ParentChannelRepository extends JpaRepository<ParentChannelEnti
 
     @Query("select p from ParentChannelEntity p join fetch p.guild g where g.guildId = ?1 and p.deleted = false")
     List<ParentChannelEntity> getAllParentChannels(Long guildId);
+
+    @Query("select p from ParentChannelEntity p join fetch p.guild g where p.deleted = false")
+    List<ParentChannelEntity> findAllActiveParentChannels();
 }
