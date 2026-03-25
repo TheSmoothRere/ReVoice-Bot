@@ -2,6 +2,8 @@
 
 **RéVoice Bot** automatically creates temporary voice channels for users, so server admins never have to worry about running out of voice channels.
 
+[**Invite the Bot**](https://discord.com/oauth2/authorize?client_id=1477302506361979041)
+
 It works by cloning a designated **trigger (parent) channel** whenever someone joins it. The newly created channel inherits all the settings and permissions from the trigger channel, so there’s no need to manually configure each generated channel.
 
 ## Features
@@ -10,6 +12,10 @@ It works by cloning a designated **trigger (parent) channel** whenever someone j
 
 1. Generate new voice channel by cloning **trigger (parent) channel** so you don't have to setting the generated channel one by one.
 2. You can use **prefix** to decide what the generated channel will be called.
+    - Valid prefixes/placeholders:
+        - `{user.name}` - The display name of the user.
+        - `{number}` - Incrementing number.
+        - `{alphabet}` - Incrementing alphabet.
 
 ### Command Feature
 
@@ -124,4 +130,3 @@ To ensure transparency for your server members and compliance with Discord's Dev
 
   * TERMS_OF_SERVICE.md – Guidelines on how to use the bot responsibly.
   * PRIVACY_POLICY.md – Information on what data we collect (e.g., User IDs for channel ownership) and how it is handled.
-
