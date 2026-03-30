@@ -28,4 +28,4 @@ USER spring:spring
 ENV SPRING_PROFILES_ACTIVE=prod
 
 COPY --from=builder /app/build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-Xms500M", "-Xmx500M", "-XX:MaxMetaspaceSize=256M", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xms128M", "-Xmx384M", "-XX:MaxMetaspaceSize=128M", "-jar", "app.jar"]
