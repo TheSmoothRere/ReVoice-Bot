@@ -15,7 +15,7 @@ import java.awt.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ParentChannelCommandHelper {
+public class ChannelCommandHelper {
     private final ParentChannelService parentChannelService;
 
     public boolean checkLimitAndReply(long guildId, SlashCommandInteractionEvent event) {
@@ -43,7 +43,7 @@ public class ParentChannelCommandHelper {
                 .setColor(Color.GREEN);
 
         log.debug("Saved parent channel: {} with prefix: {} in guild: {}", channel.getId(), prefix, channel.getGuild().getId());
-        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
+        event.replyEmbeds(embed.build()).queue();
     }
 
     public void replyError(SlashCommandInteractionEvent event, String message) {
@@ -55,9 +55,9 @@ public class ParentChannelCommandHelper {
         log.error("Failed creating parent channel. Description: {}", message);
         // If the interaction is already acknowledged (e.g. in a callback), use hook
         if (event.isAcknowledged()) {
-            event.getHook().sendMessageEmbeds(embed.build()).setEphemeral(true).queue();
+            event.getHook().sendMessageEmbeds(embed.build()).queue();
         } else {
-            event.replyEmbeds(embed.build()).setEphemeral(true).queue();
+            event.replyEmbeds(embed.build()).queue();
         }
     }
 }

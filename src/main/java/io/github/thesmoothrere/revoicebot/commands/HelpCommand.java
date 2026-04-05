@@ -31,6 +31,6 @@ public class HelpCommand extends SlashCommand {
                 .setColor(0x3498db);
 
         log.debug("Help command executed by user: {}", event.getUser().getName());
-        event.replyEmbeds(replyMessage.build()).setEphemeral(true).queue();
+        event.replyEmbeds(replyMessage.build()).queue();
     }
 }

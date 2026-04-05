@@ -2,6 +2,7 @@ package io.github.thesmoothrere.revoicebot.commands.update.subcommand;
 
 import io.github.thesmoothrere.revoicebot.command.SubSlashCommand;
 import io.github.thesmoothrere.revoicebot.dto.UpdatePrefixDto;
+import io.github.thesmoothrere.revoicebot.helper.ChannelCommandHelper;
 import io.github.thesmoothrere.revoicebot.service.ParentChannelService;
 import io.github.thesmoothrere.revoicebot.util.OptionCommandNameUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class UpdatePrefixSubcommand extends SubSlashCommand {
     private final ParentChannelService parentChannelService;
+    private final ChannelCommandHelper commandHelper;
 
     @Override
     public void init() {
@@ -40,7 +42,7 @@ public class UpdatePrefixSubcommand extends SubSlashCommand {
 
         // 2. Business Logic Check (Guard Clause)
         if (!parentChannelService.isParentChannelExist(channelId)) {
-            replyError(event);
+            commandHelper.replyError(event, "This channel is not a registered parent channel.");
             return;
         }
 
@@ -64,16 +66,7 @@ public class UpdatePrefixSubcommand extends SubSlashCommand {
                 .addField("New Prefix", "`" + newPrefix + "`", false)
                 .setColor(Color.GREEN);
 
-        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
+        event.replyEmbeds(embed.build()).queue();
         log.info("Updated prefix to '{}' for channel {}", newPrefix, channel.getId());
-    }
-
-    private void replyError(SlashCommandInteractionEvent event) {
-        EmbedBuilder embed = new EmbedBuilder()
-                .setTitle("❌ Update Failed")
-                .setDescription("The selected channel is not a registered parent channel.")
-                .setColor(Color.RED);
-
-        event.replyEmbeds(embed.build()).setEphemeral(true).queue();
     }
 }

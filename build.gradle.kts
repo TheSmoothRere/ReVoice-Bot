@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.thesmoothrere"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 description = "Automatically create temporary channel"
 
 java {
